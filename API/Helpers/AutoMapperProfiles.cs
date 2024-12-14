@@ -14,7 +14,15 @@ public AutoMapperProfiles()
           .ForMember(d=>d.PhotoUrl, o => o.MapFrom(s=>s.Photos.FirstOrDefault(x=>x.IsMain)!.Url));
     CreateMap<Photo, PhotoDto>();
     CreateMap<MemberUpdateDto, AppUser>();
+    // CreateMap<RegisterDto, AppUser>();
+    // CreateMap<string, DateOnly>().ConvertUsing(s =>DateOnly.Parse(s));
 
+    // General rule to map RegisterDto to AppUser
+    CreateMap<RegisterDto, AppUser>();
+    // Global rule for string to DateOnly conversion
+    CreateMap<string, DateOnly>().ConvertUsing(src =>
+            DateOnly.FromDateTime(DateTime.Parse(src))
+        );
 
 }
 }
