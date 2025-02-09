@@ -1,0 +1,30 @@
+using System;
+using API.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+
+namespace API.SignalR;
+
+[Authorize]
+public class PresenceHub(PresenceTracker tracker) : Hub
+{
+    public override async Task OnConnectedAsync()
+    {
+        if (Context.User == null) throw new HubException("Cannot get current user claim");
+
+        var isonline = await tracker.UserConnected(Context.User.GetUsername(), Context.ConnectionId);
+        if(isonline) await Clients.Others.SendAsync("UserIsOnline", Context.User?.GetUsername());
+
+        var currentUsers = await tracker.GetOnlineUsers();
+        await Clients.Caller.SendAsync("GetOnlineUsers", currentUsers);
+    }
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        if (Context.User == null) throw new HubException("Cannot get current user claim");
+
+        var isOffline = await tracker.UserDisConnected(Context.User.GetUsername(), Context.ConnectionId);
+        if(isOffline) await Clients.Others.SendAsync("UserIsOffline", Context.User?.GetUsername());
+
+        await base.OnDisconnectedAsync(exception);
+    }
+}
