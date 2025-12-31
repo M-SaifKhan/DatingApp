@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, inject, input, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, inject, input, model, ViewChild } from '@angular/core';
 import { MessageService } from '../../_Services/message.service';
 import { TimeagoModule } from 'ngx-timeago';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -15,9 +15,10 @@ export class MemberMessagesComponent implements AfterViewChecked {
   @ViewChild('scrollMe') scrollContainer?: any;
   messageService = inject(MessageService);
   username = input.required<string>();
-  messageContent ='';
+  protected messageContent = model('');
   sendMessage(){
-    this.messageService.sendMessage(this.username(), this.messageContent).then(() =>{
+    if(!this.messageContent()) return;
+    this.messageService.sendMessage(this.username(), this.messageContent()).then(() =>{
       this.messageForm?.reset();
       this.scrollToBottom();
     })
