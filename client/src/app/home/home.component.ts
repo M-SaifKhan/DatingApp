@@ -1,5 +1,6 @@
-import { Component} from '@angular/core';
+import { Component, inject} from '@angular/core';
 import { RegisterComponent } from "../register/register.component";
+import { AccountService } from '../_Services/account.service';
 
 
 @Component({
@@ -11,6 +12,7 @@ import { RegisterComponent } from "../register/register.component";
 })
 export class HomeComponent {
   registerMode = false;
+  protected accountService = inject(AccountService);
 
   registerToggle() {
     this.registerMode = !this.registerMode;
